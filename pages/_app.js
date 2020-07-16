@@ -1,19 +1,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Head from 'next/head';
-import './../styles/css/style.css';
+import Head from 'next/head'; 
+import './../public/assets/css/style.css';
+import './../public/assets/css/profile.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-fancybox/lib/fancybox.css'
-import 'aos/dist/aos.css'
+import 'font-awesome/css/font-awesome.min.css';
+import 'aos/dist/aos.css'; 
+import { getStores, StoreProvider } from '../stores/stores';  
+import Responder  from '../services/Beedy';
+// import { Responder } from '../services/Beedy';
 // import { ThemeProvider } from '@material-ui/core/styles';
 // import CssBaseline from '@material-ui/core/CssBaseline';
 // import theme from '../theme'; 
-// import { Provider } from 'mobx-react' 
-// import { getStores, StoreProvider } from '../store/store'; 
+// import { Provider } from 'mobx-react'  
+
 
 export default function MyApp(props) {
   const { Component, pageProps } = props; 
-  // const store = getStores();
+  const store = getStores();
 
   //make stores available to all pages 
 
@@ -29,10 +34,14 @@ export default function MyApp(props) {
   return (
     <React.Fragment>
       <Head>
-        <title>My page</title>
+        <title>Ecommerce</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
       </Head>
+      {/* <button onClick={() =>Beedy('warning', 'is it working')} >Click </button> */}
+      <Responder />
+      <StoreProvider value={store}> 
         <Component {...pageProps} />
+      </StoreProvider>
       {/* <ThemeProvider theme={theme}>
        
         <CssBaseline />
