@@ -1,4 +1,4 @@
-import { decorate, observable, action, computed } from "mobx" 
+import {  observable, action, computed } from "mobx" 
 import api from "../services/APIService";
 import CookieService from "../services/CookieService";
 import { Beedy } from "../services/Beedy";
@@ -9,20 +9,24 @@ class ProductStore {
     this.fetchProduct(); 
   }
   
-     error = false;
-     filter = 'ALL';
-     message = '';
-     loading = false;
-     sent = false; 
-     products = [];
-     product = [];
-     homeProducts = []; 
+    @observable error = false;
+    @observable filter = 'ALL';
+    @observable message = '';
+    @observable loading = false;
+    @observable saved = false; 
+    @observable sending = false; 
+    @observable products = [];
+    @observable product = [];
+    @observable homeProducts = []; 
 
-     setFilter = (data) => {
+    @action  setFilter = (data) => {
      	this.filter = data;
      }
-
-    fetchProduct = () => { 
+    
+     @action refreshForm = () => {
+      this.saved = false; 
+     }
+    @action fetchProduct = () => { 
     this.loading = true; 
     api.get('product/all').then( res => {  
           this.homeProducts = res.data;
@@ -32,17 +36,20 @@ class ProductStore {
   }
 
    
-  saveProduct = (formData) => { 
-    try {  
+ @action saveProduct = (formData) => { 
+    try {
+      this.sending = true;
       api.post('product', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       }).then(res => {
+        this.sending = false;
         if(res.data.status === 500) {
           CookieService.logout();
         }
        else  if(res.data.status === 200) {
+        this.saved = true;
         this.fetchProduct();
         Beedy('success', res.data.message);
        }
@@ -57,7 +64,7 @@ class ProductStore {
     }
   }
 
-  myProducts = () => {  
+ @action myProducts = () => {  
     this.loading = true;
     api.get('product/myproduct').then( res => {   
       this.loading = false;
@@ -71,15 +78,16 @@ class ProductStore {
     }); 
   }
 
-   removeProduct = (id) => { 
+ @action  removeProduct = (id) => { 
     api.delete('product/' + id).then( res => {
       if(res.status === 200) {
         this.fetchProduct();
-        this.message = res.message; 
+        Beedy('success', res.data.message);
       }
     })
   }
-  getProductDetails = (id) => {
+ @action getProductById = (id) => {
+  console.log(id)
     api.get('product/' + id).then( res => {
       if(res.data.status === 200) { 
         this.product = res.data.data[0];
@@ -88,7 +96,7 @@ class ProductStore {
   }
   
 
-  get filteredProduct() {
+  @computed get filteredProduct() {
     switch (this.filter) {
       case 'ALL':
         return this.products;
@@ -104,7 +112,7 @@ class ProductStore {
     }
   }
 
-  get info() {
+  @computed get info() {
   	return {
       total: this.products.length,
       status: this.products.filter(cat => cat.status).length
@@ -112,26 +120,7 @@ class ProductStore {
    
   }
 
-} 
-decorate(ProductStore, { 
-  message: observable,
-  error: observable,
-  filter: observable,
-  product: observable, 
-  sent: observable,
-  loading: observable,
-  products: observable,
-  homeProducts: observable,
-  filteredProduct: computed,
-  info: computed, 
-  fetchProduct: action,
-  getProductDetails: action,
-  addProduct: action,
-  myProducts: action, 
-  removeProduct: action,
-  setFilter: action
-})
-
+}  
  
 // export default createContext(new ProductStore())
 export default ProductStore;

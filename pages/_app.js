@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import Head from 'next/head'; 
 import './../public/assets/css/style.css';
 import './../public/assets/css/profile.css';
+import './../public/assets/css/chat.css';
+import './../public/assets/css/flip.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-fancybox/lib/fancybox.css'
 import 'font-awesome/css/font-awesome.min.css';

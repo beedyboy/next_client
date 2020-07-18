@@ -1423,6 +1423,9 @@ textarea.form-control {
         }
 
 
+.ck-content {
+  min-height: 20em;
+}
 /* .beedy-alert {
   position: absolute;
   top: 50%;

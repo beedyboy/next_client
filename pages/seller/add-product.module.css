@@ -1,4 +1,4 @@
-.beedy-input {
+.beedyInput {
   visibility: hidden;
 }
 .beedy-input::before {  
@@ -28,14 +28,16 @@
   width: 100%;
   max-height: 200px;  
 }
-.image-preview {
+.imagePreview {
   position: relative; 
   display: inline-block; 
   border-left:  1px solid gray;
   border-right:  1px solid gray;
   border-top:  5px solid gray;
   border-bottom:  5px solid gray;
-  background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+  background: url(/assets/images/dummy.png) no-repeat center center;
+  width: 100%; 
+  /*background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);*/
   box-shadow: 0 15px 35px rgba(50,50,93,.1), 0 5px 15px rgba(0,0,0,.07); 
   height: 200px;  
   max-height: 100%;
@@ -44,10 +46,7 @@
   text-align: center;  
 }
 
-.image-preview  img {
+.imagePreview  img {
   width: 100%;
   max-height: 200px;  
-}
-.ck-content {
-  min-height: 20em;
-}
+} 

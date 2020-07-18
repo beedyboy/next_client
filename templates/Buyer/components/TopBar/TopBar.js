@@ -19,8 +19,7 @@ import CookieService from '../../../../services/CookieService';
 import Storage from '../../../../services/Storage'; 
 import { observer } from 'mobx-react';
 import { useMobxStores } from '../../../../stores/stores'; 
-
-import { observer } from 'mobx-react';
+ 
     const TopBar = ({scroll, handleForm, isOpen, toggle, doForm}) => {
     const { authStore } = useMobxStores();
     const { extendToSeller, loading } = authStore; 

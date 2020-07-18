@@ -24,27 +24,20 @@ class CategoryStore {
   }
 
   get categories() {
-    var data = []
-    this.categoryList.map(cat => {
-      const d = {
-        id: cat.id,
-        name: cat.name
-      }      
-      data.push(d); 
-    });   
-     return data; 
+   return  Object.keys(this.categoryList || {}).map(key => ({...this.categoryList[key], uid: key}));
+ 
     }
 
   get tagCategories() {
     let data = [];
-    this.categoryList.map(cat => {
-      const d = {
-        value: cat.name,
-        label: cat.name
-      }
-      data.push(d);
-    }); 
-    return data;
+     return  Object.keys(this.categoryList || {})
+     .map(key => (
+                  {
+                    value: this.categoryList[key].name,
+                    label: this.categoryList[key].name}
+                  ));
+ 
+     
   }
   
 

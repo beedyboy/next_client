@@ -36,7 +36,7 @@ class UserStore {
     api.post('user/update/buyer/', data).then( res => {  
       if(res.data.status === 200) {
        this.getBuyerProfile(); 
-       this.message = res.data.message; 
+       Beedy('success', res.data.message);
        this.response = true;           
       }
     })
@@ -54,7 +54,7 @@ class UserStore {
     api.post('user/update/seller/', data).then( res => {  
       if(res.data.status === 200) {
        this.getSellerProfile(); 
-       this.message = res.data.message; 
+       Beedy('success', res.data.message);
        this.response = true;           
       }
     })
@@ -62,8 +62,8 @@ class UserStore {
  @action updateShop = (data) => { 
     api.post('user/update/shop', data).then( res => {  
       if(res.data.status === 200) {
-       this.getSellerProfile(); 
-       this.message = res.data.message; 
+       this.getSellerProfile();
+       Beedy('success', res.data.message); 
        this.response = true;           
       }
     })
@@ -92,25 +92,5 @@ class UserStore {
     
     }
   
-}
-// decorate(UserStore, { 
-//   error: observable,
-//   loading: observable,
-//   invited: observable,
-//   users: observable,
-//   seller: observable,
-//   profiles: observable,
-//   buyer: observable,
-//   emailExist: observable, 
-//   getBuyerProfile: action,
-//   getSellerProfile: action,
-//   updateSeller: action,
-//   updateBuyer: action,
-//   updateShop: action,
-//   inviteAFriend: action,
-//   setInvited: action,
-//   confirmEmail: action, 
-//   sellerProfile: computed 
-// })
-
+} 
 export default UserStore;

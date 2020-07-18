@@ -2,11 +2,11 @@ import React, { useState, Fragment, useEffect, useRef } from "react";
 import Head from 'next/head';  
 import { Row, Container, Col, Form, Card, CardHeader, CardBody, FormGroup, Input, Label, CardFooter, FormText, CustomInput, Button } from "reactstrap";
 import Select from 'react-select';
-import CKEditor from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+//import CKEditor from '@ckeditor/ckeditor5-react';
+//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import dataHero from "data-hero";   
 import { useMobxStores } from "../../stores/stores";
-import styles './add-product.module.css';   
+import styles from './add-product.module.css';   
 import { SellerLayout } from "../../templates";
 const schema = {
     name:  {
@@ -26,13 +26,16 @@ const schema = {
   }; 
 const AddProduct = () => {
   const { categoryStore, locationStore, productStore } = useMobxStores(); 
-  const { saveProduct } = productStore; 
+  const { saveProduct, sending, saved } = productStore; 
   const { categories, tagCategories } = categoryStore; 
-  const { location } = locationStore; 
-
+  const { location } = locationStore;  
+  const editorRef= useRef();
   const mainInput = useRef('');
   const firstInput = useRef('');
+  
+  const {  CKEditor, ClassicEditor } = editorRef.current || {};
 
+  const [editorLoaded, setEditorLoaded] = useState(false);
   const [description, setDescription] = useState('');
   const [mainCat, setMainCat] = useState(null);
   const [tags, setTags] = useState('');
@@ -55,7 +58,13 @@ const AddProduct = () => {
         touched: {},
         errors: {}
       });
-       
+    useEffect(() => {
+      editorRef.current = {
+        CKEditor: require('@ckeditor/ckeditor5-react'),
+        ClassicEditor: require('@ckeditor/ckeditor5-build-classic')
+      }
+      setEditorLoaded(true)
+    }, [])
       useEffect(() => {
         const errors = dataHero.validate(schema, formState.values);  
         setFormState(formState => ({
@@ -64,7 +73,15 @@ const AddProduct = () => {
           errors: errors || {}
         }));
       }, [formState.values]);
-    
+       
+       useEffect(() => {
+          if (saved === true) {
+            handleReset();      
+		  }
+        return () => {
+          refreshForm();
+        }
+       }, [saved])
       const handlePreUpload = (e, name) => {
         e.preventDefault();  
         if(name === 'main') {
@@ -172,8 +189,32 @@ const handleChange = event => {
   }
 const hasError = field =>
       formState.touched[field] && formState.errors[field].error;  
-  
- 
+
+const handleReset = () => {
+         setFormState(formState => ({
+      ...formState,
+      values: {
+        ...formState.values,
+         id: '',
+          name: '',  cat_id: '', available: '', location: '',  price: '',
+          packed: '', first_delivery: false, second_delivery: false, third_delivery: false, within_distance: '', within_charge:'', beyond_distance: '', beyond_charge:''
+       
+      } 
+    }));
+     
+      setUploadImage(state => ({
+        ...state,
+         images: {
+      'main': {preview: '', file: 'choose file'},
+      'first': {preview: '', file: ''},
+      'middle': {preview: '', file: ''},
+      'last': {preview: '', file: ''}
+    }
+      }));
+      setDescription('');
+      setTags('');
+      setMainCat(null);
+  }
     return (
     <Fragment>
       <Head>
@@ -182,18 +223,7 @@ const hasError = field =>
       <SellerLayout>
       <Container>
            <CardHeader>
-                <h4>New Product</h4>
-                 
-                {/* <div className="beedy-alert-container">
-                <div className="beedy-alert success">
-                 <span>
-                   <i className="fa fa-info icon"></i>
-                 </span> 
-                <span className="title">Message</span>
-                 <h1> A success message alert </h1>
-                </div>
-                </div> */}
-
+                <h4>New Product</h4> 
                 </CardHeader>
         <Form onSubmit={createProduct}>
       <Row>
@@ -365,8 +395,10 @@ const hasError = field =>
           <Row>      
             <Col md="6" sm="12">
             <div className={styles.beedy}>
-                <div className={styles.image-preview}>
-                  <img src={uploadImage.images.main.preview} alt="Main" />
+                <div className={styles.imagePreview}>
+                  <img
+                    src={uploadImage.images.main.preview ? uploadImage.images.main.preview :  `/assets/images/dummy.png`} 
+                   alt="Main" />
                 </div>
                 </div> 
             <input
@@ -375,11 +407,10 @@ const hasError = field =>
               name="main"
               id="main"
               onChange={(e)=> handleUpload(e)}
-              className={styles.beedy-input}
+              className={styles.beedyInput}
               ref={mainInput}
             />
-            <Label for="main">
-                 
+            <Label for="main"> 
               <Button type="button" color="secondary"
                     size="small" 
                     aria-label="add"
@@ -388,22 +419,16 @@ const hasError = field =>
                     <span> Choose Main File  <i className="fa fa-camera"></i></span>
                
               </Button>
-            </Label>
-
-                {/* <Label>Main Image</Label>  */}
-                {/* <Input type="file"
-                  accept="image/*"
-                  name="main"
-                  className="beedy-input"
-                  onChange={(e)=> handleUpload(e)}
-                    /> */}
-               
+            </Label>                
             </Col> 
                
             <Col md="6" sm="12">                 
             <div className={styles.beedy}>
-                <div className={styles.image-preview}>
-                  <img src={uploadImage.images.first.preview} alt="First" />
+                <div className={styles.imagePreview}>
+                  <img
+                  src={uploadImage.images.first.preview ?
+                  uploadImage.images.first.preview :  `/assets/images/dummy.png`}
+                 alt="First" />
                 </div>
                 </div>
                 <input
@@ -412,7 +437,7 @@ const hasError = field =>
                  name="first"
                  id="first"
                 onChange={(e)=> handleUpload(e)}
-                className={styles.beedy-input}
+                className={styles.beedyInput}
                 ref={firstInput}
             />
             <Label for="first">
@@ -428,7 +453,8 @@ const hasError = field =>
             </Label>
             </Col> 
          </Row>
-         <Row>
+          {editorLoaded ? (
+                                <Row>
            <Col md="12">
              <FormGroup>
                <Label>Description</Label>
@@ -439,7 +465,10 @@ const hasError = field =>
              </FormGroup>
            </Col>
          </Row>
-         
+         ) : (
+          <div>Editor loading </div>
+         )
+      } 
          <Row>
            <Col md="12">
            <FormGroup check>
@@ -464,7 +493,7 @@ const hasError = field =>
       </Row>
  
     <CardFooter>
-    <Button color="primary" disabled={!formState.isValid } 
+    <Button color="primary" disabled={!formState.isValid || sending } 
         type="submit">
             Save changes
     </Button>

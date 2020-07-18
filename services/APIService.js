@@ -3,11 +3,12 @@ import Storage from "./Storage";
 
 Axios.defaults.withCredentials = true; 
 let urls = {
-    development: 'http://localhost:8000/api/',
-    production: 'http://cloud.devprima.com/api/'
+    development: 'http://localhost:8000/',
+    production: 'http://cloud.devprima.com/'
 }
+ 
 const  api = Axios.create({
-    baseURL: urls[process.env.NODE_ENV],
+    baseURL: urls[process.env.NODE_ENV] +'api/',
     responseType: 'json',
     timeout: 10000,
     withCredentials: true,

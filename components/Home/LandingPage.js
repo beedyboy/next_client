@@ -11,7 +11,7 @@ import {
 import Link from 'next/link'; 
 import { useMobxStores } from '../../stores/stores';
 import { observer } from 'mobx-react';
-
+import ListCard  from '../Product/Card/ListCard';
  const LandingPage = () => { 
     const { locationStore, productStore } = useMobxStores();
     const { cities, location } = locationStore; 
@@ -234,7 +234,7 @@ import { observer } from 'mobx-react';
             <Container>
             <Row className="justify-content-center text-center mb-5">
             <Col md="7"> 
-                <h2 className="heading" data-aos="fade-up">Rooms &amp; Suites</h2>
+                <h2 className="heading" data-aos="fade-up">Trending &amp; Products</h2>
                 <p data-aos="fade-up" data-aos-delay="100">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
             </Col>
             </Row>
