@@ -1,9 +1,10 @@
 import React, { useState, useEffect, Fragment } from 'react'; 
 import Aos from "aos"; 
+import Router from 'next/router';
 import TopBar from '../TopBar';
 import Footer from '../Footer';  
 import { Container, Row, Col } from 'reactstrap';
-// import "./custom.css";
+import Storage from '../../../../services/Storage'; 
   
  const BuyerLayout = props => {
     const [isOpen, setIsOpen] = useState(true); 
@@ -16,11 +17,13 @@ import { Container, Row, Col } from 'reactstrap';
     
 
   const toggle = () => setIsOpen(!isOpen);
-  useEffect(() => {
-      Aos.init({ duration: 2000});
-  }, []);
-  
-  useEffect(() => {
+   useEffect(() => {
+      const token = Storage.get('token');
+      if (!token) {
+        Router.push('/');
+      }
+
+      Aos.init({ duration: 2000}); 
       if(typeof window !== "undefined") {
         window.addEventListener('scroll', handleScroll);
         return () => {
@@ -28,7 +31,7 @@ import { Container, Row, Col } from 'reactstrap';
         }
       }
      
-  }, []);
+  }); 
 
   const handleScroll = e => {
       const current = window.scrollY;  

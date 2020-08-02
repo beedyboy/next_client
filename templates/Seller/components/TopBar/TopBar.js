@@ -36,6 +36,8 @@ const toggleDp = () => setOpen(!dropdownOpen);
 const authenticatorLinks = () => { 
     if(access_token) { 
         return (
+            <Fragment>
+                
             <ButtonDropdown isOpen={dropdownOpen} toggle={toggleDp}>
                 <DropdownToggle caret>
                     Account
@@ -66,6 +68,7 @@ const authenticatorLinks = () => {
                      <span className="nav-link" onClick={logout}>Logout</span></DropdownItem>
                 </DropdownMenu>
             </ButtonDropdown>
+            </Fragment>
         )
 
    
@@ -87,22 +90,22 @@ if(loading) {
         <NavbarBrand><span className="text-danger">Online</span>Shopping</NavbarBrand> 
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={!isOpen} id="templateux-navbar-nav" navbar>
-        <Nav className="ml-auto" navbar> 
-            <NavItem>
-              <Link href="/">
-                  <a className="nav-link">Home</a>
-              </Link> 
-            </NavItem>
-            <NavItem>
-               <Link href="/seller/add-product">
-                   <a className="nav-link">Add Product</a>
+            <Nav className="ml-auto" navbar> 
+                <NavItem>
+                <Link href="/">
+                    <a className="nav-link">Home</a>
                 </Link> 
-            </NavItem> 
-            
+                </NavItem>
+                <NavItem>
+                <Link href="/seller/add-product">
+                    <a className="nav-link">Add Product</a>
+                    </Link> 
+                </NavItem> 
+                
             
             {!token ?
             (
-                <NavItem className="cta-btn ml-xl-2 ml-lg-2 ml-md-0 ml-sm-0 ml-0 pt-2"> 
+                <NavItem className="cta-btn ml-xl-2 ml-lg-2 ml-md-0 ml-sm-0 ml-0 mr-1 pt-2"> 
                 <span onClick={() => handleForm('register','login')}>Buyer Login</span>
                 <div className="arrow-up" style={{display: doForm['login']}}></div>
                     <div className="top-container">
@@ -110,9 +113,9 @@ if(loading) {
                     <Login initial_data={initial_data} />
                 </div>
                     </div> 
-            </NavItem> 
+            </NavItem>
             )
-            :null}
+            :null} 
             {authenticatorLinks()}
            
       </Nav>

@@ -12,9 +12,7 @@ const SellerLayout = props => {
     const [doForm, setDoForm] = useState({
         login: 'none',
         register: 'none'
-    });  
-
-    
+    });   
 
   const toggle = () => setIsOpen(!isOpen);
   useEffect(() => {
@@ -31,7 +29,7 @@ const SellerLayout = props => {
         }
       }
      
-  }, []);
+  });
 
   const handleScroll = e => {
       const current = window.scrollY;  

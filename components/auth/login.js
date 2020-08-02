@@ -3,13 +3,14 @@ import { Form, FormFeedback, Label, Input, Button, FormGroup } from 'reactstrap'
 import { observer } from 'mobx-react'; 
 import dataHero from 'data-hero';  
 import Router  from "next/router";
-import Storage from "../../services/Storage";
-// import useEffect from "../../services/LayoutEffect";
+import Storage from "../../services/Storage"; 
 import { useMobxStores } from "../../stores/stores";
+// import useEffect from "../../services/LayoutEffect";
 
 
 const schema = {
     email:  {
+      email: true,
       isEmpty: false,
       min: 6,
       message: 'A valid email is required'
@@ -36,7 +37,10 @@ const Login = props => {
       errors: {} 
     });
     useEffect(() => {  
-        if(isAuth !== false) {  
+        // console.log('auth', isAuth)
+        if(isAuth === true) {  
+          // console.log('logging in')
+          
           if(formState.values.referred === true) {
             //goto page
             if (formState.values.goto === 'BUYERS' ) {
@@ -44,6 +48,7 @@ const Login = props => {
               Storage.save('id', id);
               Router.push('/buyer/dashboard'); 
             } else {
+              Storage.save('id', id);
               Router.push('/seller/dashboard');
             }
           } else {
@@ -54,6 +59,7 @@ const Login = props => {
               Storage.save('id', id);
               Router.push('/buyer/dashboard'); 
             } else {
+              Storage.save('id', id);
               Router.push('/seller/dashboard');
             }
           
@@ -64,7 +70,7 @@ const Login = props => {
         return () => {
             setTimeout( loginSuccessful(), 3000);
         }
-    });
+    }, [isAuth]);
     useEffect(() => {  
         let setInitial =  typeof initial_data !== 'undefined' ? true : false; 
           if (setInitial) {  
@@ -106,15 +112,12 @@ const Login = props => {
       };
     
     const handleSubmit = e => {
-        e.preventDefault();
-        console.log('hello')
+        e.preventDefault(); 
         login(formState.values);
     }
-    const hasError = field => {
-        return formState.touched[field] && formState.errors[field].error; 
-    }
-     
-        return (
+    const hasError = field => formState.touched[field] && formState.errors[field].error; 
+    
+    return (
             <Form onSubmit={handleSubmit} noValidate autoComplete="false">
                  <h3>Sign In</h3>
 
@@ -123,7 +126,7 @@ const Login = props => {
                     <Input type="email" name="email" onChange={handleChange}
                      value={ formState.values.email || '' } 
                      invalid={ hasError('email') } className="form-control" placeholder="Enter email" />
-                      <FormFeedback  invalid={ hasError('email') }>
+                      <FormFeedback  invalid={ hasError('email')}>
             {
                   hasError('email') ? formState.errors.email && formState.errors.email.message : null
                 } 

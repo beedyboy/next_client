@@ -27,12 +27,20 @@ class ProductStore {
       this.saved = false; 
      }
     @action fetchProduct = () => { 
-    this.loading = true; 
+    try {
+		 this.loading = true; 
     api.get('product/all').then( res => {  
           this.homeProducts = res.data;
-      this.loading = false;
-        
-    }); 
+      this.loading = false; 
+    })
+    .catch(err => {
+     console.log('fetch_product', err.code);
+     console.log('fetch_product', err.message);
+     console.log('fetch_product', err.stack);
+    });
+	} catch(e) {
+		console.error(e);
+	}
   }
 
    
@@ -54,7 +62,12 @@ class ProductStore {
         Beedy('success', res.data.message);
        }
        
-      }).catch(error => console.log(error))
+      })
+    .catch(err => {
+     console.log('save_product', err.code);
+     console.log('save_product', err.message);
+     console.log('save_product', err.stack);
+    });
     } catch(err) {
       if(err.response.status === 500) {
         console.log("There was a problem with the server");
@@ -65,7 +78,8 @@ class ProductStore {
   }
 
  @action myProducts = () => {  
-    this.loading = true;
+    try {
+   this.loading = true;
     api.get('product/myproduct').then( res => {   
       this.loading = false;
       if(res.data.status === 500) {
@@ -75,7 +89,16 @@ class ProductStore {
        this.products = res.data.data; 
       }
         
-    }); 
+    })
+    .catch(err => {
+     console.log('my_product', err.code);
+     console.log('my_product', err.message);
+     console.log('my_product', err.stack);
+    });
+  
+	} catch(e) {
+		console.error(e);
+	}
   }
 
  @action  removeProduct = (id) => { 
@@ -85,14 +108,28 @@ class ProductStore {
         Beedy('success', res.data.message);
       }
     })
+    .catch(err => {
+     console.log('remove_product', err.code);
+     console.log('remove_product', err.message);
+     console.log('remove_product', err.stack);
+    });
   }
  @action getProductById = (id) => {
+  try {
   console.log(id)
     api.get('product/' + id).then( res => {
       if(res.data.status === 200) { 
         this.product = res.data.data[0];
       }
     })
+    .catch(err => {
+     console.log('product_by_id', err.code);
+     console.log('product_by_id', err.message);
+     console.log('product_by_id', err.stack);
+    });
+  } catch(e) {
+	console.error(e);
+  }
   }
   
 

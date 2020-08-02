@@ -14,13 +14,13 @@ const Responder = () => {
     let icon = 'info';
     useEffect(() => {
         emitter.on('notification', (type, message) => {
-            handleAlert(type, message)
-        })
-    }, [])
+            handleAlert(type, message);
+        });
+    }, []);
     if (type === 'success') {
-        icon = 'thumbs-up'
+        icon = 'thumbs-up';
     } else if (type === 'warning') {
-        icon = 'warning'
+        icon = 'warning';
     }
     const handleAlert = (type, message) => {
         setMessage(message);

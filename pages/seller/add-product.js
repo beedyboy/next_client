@@ -26,7 +26,7 @@ const schema = {
   }; 
 const AddProduct = () => {
   const { categoryStore, locationStore, productStore } = useMobxStores(); 
-  const { saveProduct, sending, saved } = productStore; 
+  const { saveProduct, sending, saved, refreshForm } = productStore; 
   const { categories, tagCategories } = categoryStore; 
   const { location } = locationStore;  
   const editorRef= useRef();
@@ -92,7 +92,7 @@ const AddProduct = () => {
       }
     const handleTag = e => { 
         setTags(Array.isArray(e) ? e.map(x => x.value) : []); 
-        console.log(tags);
+        // console.log(tags);
     }
       
 const handleChange = event => {
@@ -112,7 +112,7 @@ const handleChange = event => {
         [event.target.name]: true
       }
     }));
-    console.log(field,  ': ',  event.target.type === 'checkbox'
+    // console.log(field,  ': ',  event.target.type === 'checkbox'
     ? event.target.checked
     : event.target.value)
     switch (field) {

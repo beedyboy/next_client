@@ -7,12 +7,15 @@ import { observer } from 'mobx-react'
 import { useMobxStores } from '../../stores/stores';
 import { MainLayout } from '../../templates';
 import { serverUrl } from '../../services/APIService';
+import { Chatter } from "../../services/Chatter";
 import Link from 'next/link';
 
 const ProductDetails = ({details}) => {
   const router = useRouter();
-    const { productStore } = useMobxStores();
-    const { product, getProductById } = productStore;
+    const { productStore, orderStore } = useMobxStores();
+    const { product, getProductById } = productStore; 
+     const { bidNow } = orderStore;
+     //console.log('msg',message);
     const [items, setItems] = useState([]); 
   const [data, setData] = useState({
           id: '',
@@ -39,8 +42,7 @@ const ProductDetails = ({details}) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
     useEffect(() => {
-        var details = router.query.details;
-        console.log('details', details);
+        var details = router.query.details; 
         const second = details[1];
         const id = second.split("-");
         getProductById(id);
@@ -123,11 +125,11 @@ const ProductDetails = ({details}) => {
     );
   });
    
-   
-   
+
+  const placeBid = e => { 
     //console.log('items', d.split("-"));
-  const startChat = (seller) => {
-    console.log(seller);
+  const startChat = (seller) => { 
+    Chatter(seller)
   }
     return (
         <Fragment>
@@ -204,7 +206,7 @@ const ProductDetails = ({details}) => {
             <div><span className="font-weight-bold">Seller:</span>
             <span className="ml-2"> {data.shopName} </span></div>
             <div className="mt-3">
-                <Button className="btn0 mr-2" color="warning" type="button">BID NOW</Button>{" "}
+                <Button className="btn0 mr-2" color="warning"  onClick={(e) => placeBid(e)}  type="button">BID NOW</Button>{" "}
                <Button className="btn btn-success" onClick={() => startChat(data.seller)} type="button">Chat Seller</Button>  
             </div>
              </Col>

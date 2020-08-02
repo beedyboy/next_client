@@ -25,10 +25,10 @@ import { useMobxStores } from '../../../../stores/stores';
     const { extendToSeller, loading } = authStore; 
     const [dropdownOpen, setOpen] = useState(false);
     const toggleDp = () => setOpen(!dropdownOpen);
-    const token = Utility.get('token');
+    const token = Storage.get('token');
     const access_token = CookieService.get('access_token');  
 
-    const logout = () => Utility.logout();
+    const logout = () => Storage.logout();
     const initial_data = {  
     referred: true,
     goto: 'SELLERS'

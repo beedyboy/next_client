@@ -1,16 +1,16 @@
-import { decorate, observable, action, computed, reaction } from "mobx"
+import {  observable, action, computed } from "mobx"
 
 import api from "../services/APIService"; 
 
 class ServiceStore {
   
   
-     type = 'success'; 
-     message = '';
-     open = false; 
+   @observable  type = 'success'; 
+   @observable  message = '';
+   @observable  open = false; 
  
 
-     fireMe = (open, type, message) => {
+   @action  fireMe = (open, type, message) => {
        this.open = open;
        this.type = type;
        this.message = message;
@@ -18,13 +18,7 @@ class ServiceStore {
  
    
 
-} 
-decorate(ServiceStore, { 
-  message: observable,
-  open: observable,
-  type: observable, 
-  fireMe: action
-})
+}  
 
  
 export default ServiceStore;

@@ -1,4 +1,4 @@
-import { decorate, observable, action, computed } from "mobx"
+import { observable, action, computed } from "mobx"
 import api from "../services/APIService";
 
 class CategoryStore {
@@ -7,51 +7,46 @@ class CategoryStore {
    
   }
   
-     error = false;
-     filter = 'Active';
-     message = '';
-     loading = false; 
+  @observable error = false;
+  @observable filter = 'Active';
+  @observable message = '';
+  @observable loading = false; 
 
-     categoryList = [] 
+  @observable categoryList = [] 
  
-    fetchCategory = () => {
-    this.loading = true;
+  @action  fetchCategory = () => {
+    try {
+		this.loading = true;
     api.get('category').then( res => {  
           this.categoryList = res.data;
-      this.loading = false;
-        
-    }); 
+      this.loading = false; 
+    })
+    .catch(err => {
+     console.log('all_cat', err.code);
+     console.log('all_cat', err.message);
+     console.log('all_cat', err.stack);
+    });
+	} catch(e) {
+		console.error(e);
+	}
   }
 
-  get categories() {
+  @computed get categories() {
    return  Object.keys(this.categoryList || {}).map(key => ({...this.categoryList[key], uid: key}));
  
     }
 
-  get tagCategories() {
+  @computed get tagCategories() {
     let data = [];
      return  Object.keys(this.categoryList || {})
      .map(key => (
                   {
                     value: this.categoryList[key].name,
                     label: this.categoryList[key].name}
-                  ));
- 
-     
+                  )); 
   }
   
 
-} 
-decorate(CategoryStore, { 
-  message: observable,
-  error: observable,
-  filter: observable,  
-  loading: observable,
-  categoryList: observable, 
-  fetchCategory: action,
-  tagCategories: computed,
-  categories: computed
-})
-
+}  
  
 export default CategoryStore;

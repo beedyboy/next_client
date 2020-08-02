@@ -4,30 +4,38 @@ import api from "../services/APIService";
 
 class AuthStore {
   // constructor() {
-  //   this.fetchAuths();
-  //   this.getProfile()
-  //   reaction(() => this.users, _ => console.log(this.users.length))
+  //    console.log(this.isAuth) 
   // }
-    id = null;
-    token = null;
-    preferred = null; 
-    isAuth = false;
-    registered = false;
-     error = null;
-     loading = false;
-     emailExist = false; 
-     profiles = [];
+  @observable id = null;
+  @observable token = null;
+  @observable preferred = null; 
+  @observable isAuth = false;
+  @observable registered = false;
+  @observable error = null;
+  @observable loading = false;
+  @observable emailExist = false; 
+  @observable profiles = [];
 
    
   
-  confirmEmail = (data) => {
-    api.get('auth/' + data + '/exist').then( res => { 
+ @action confirmEmail = (data) => {
+   try {
+	    api.get('auth/' + data + '/exist').then( res => { 
       this.emailExist = res.data.exist;
     })
+    .catch(err => {
+     console.log('confirm_email', err.code);
+     console.log('confirm_email', err.message);
+     console.log('confirm_email', err.stack);
+    });
+   } catch(e) {
+	console.error(e);
+   }
   }
    
-  extendToBuyer = () => {
-    this.loading = true;
+ @action extendToBuyer = () => {
+    try {
+		  this.loading = true;
     this.error = null; 
     api.post('auth/extend/buyer', {data: 'payload'}).then( res => { 
       if(res.data.status === 200) { 
@@ -35,10 +43,19 @@ class AuthStore {
         //you can now login to buyer account 
       }
     })
+    .catch(err => {
+     console.log('ext_to_buyer', err.code);
+     console.log('ext_to_buyer', err.message);
+     console.log('ext_to_buyer', err.stack);
+    });
+	} catch(e) {
+		console.error(e);
+	}
   }
    
-  extendToSeller = () => {
-    this.loading = true;
+ @action extendToSeller = () => {
+   try {
+	    this.loading = true;
     this.error = null; 
     api.post('auth/extend/seller', {data: 'payload'}).then( res => { 
       if(res.data.status === 200) { 
@@ -46,9 +63,18 @@ class AuthStore {
         //you can now login to buyer account 
       }
     })
+    .catch(err => {
+     console.log('ext_to_seller', err.code);
+     console.log('ext_to_seller', err.message);
+     console.log('ext_to_seller', err.stack);
+    });
+   } catch(e) {
+	console.error(e);
+   }
   }
-  createBuyer = (payload) => {
-    this.loading = true;
+ @action createBuyer = (payload) => {
+   try {
+	    this.loading = true;
     this.error = null;
     this.registered = false; 
     api.post('auth/create/buyer', payload).then( res => { 
@@ -57,10 +83,19 @@ class AuthStore {
         this.registered = true; 
       }
     })
+    .catch(err => {
+     console.log('create_buyer', err.code);
+     console.log('create_buyer', err.message);
+     console.log('create_buyer', err.stack);
+    });
+   } catch(e) {
+	console.error(e);
+   }
   }
 
-  createSeller = (payload) => {
-    this.loading = true;
+ @action createSeller = (payload) => {
+   try {
+	     this.loading = true;
     this.error = null; 
     this.registered = true; 
     api.post('auth/create/seller', payload).then( res => { 
@@ -69,12 +104,16 @@ class AuthStore {
         this.registered = false; 
       }
     })
+   } catch(e) {
+	console.error(e);
+   }
   }
   
 
    
-  login = (payload) => {
-    this.loading = true;
+ @action login = (payload) => {
+    try {
+		  this.loading = true;
     this.error = null;
     api.post('auth/auth', payload).then( res => { 
       if(res.data.status === 200) { 
@@ -82,38 +121,26 @@ class AuthStore {
         this.id = res.data.user[0].id;
         this.token = res.data.user[0].buyer_token; 
         this.preferred = res.data.user[0].preferred; 
-        this.isAuth = true; 
-         
+        this.isAuth = true;  
       }
     })
+    .catch(err => {
+     console.log('login', err.code);
+     console.log('login', err.message);
+     console.log('login', err.stack);
+    });
+	} catch(e) {
+		console.error(e);
+	}
   }
    
-  loginSuccessful = () => {
+ @action loginSuccessful = () => {
     this.isAuth = false;
   }
     
    
    
-}
-decorate(AuthStore, {
-  id: observable,
-  token: observable,
-  preferred: observable,
-  isAuth: observable,
-  registered: observable,
-  error: observable,
-  loading: observable,
-  users: observable, 
-  emailExist: observable, 
-  confirmEmail: action, 
-  createBuyer: action,
-  createSeller: action, 
-  extendToBuyer: action,
-  extendToSeller: action,
-  login: action,
-  logOut: action,
-  loginSuccessful: action
-})
+} 
 
 export default AuthStore
 

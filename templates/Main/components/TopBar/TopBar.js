@@ -58,7 +58,7 @@ const switcher = () => {
       
     return (
         <>
-          <NavItem className="cta-btn ml-xl-2 ml-lg-2 ml-md-0 ml-sm-0 ml-0 pt-2"> 
+          <NavItem className="cta-btn ml-xl-1 ml-lg-1 ml-md-0 ml-sm-0 ml-0 pt-2"> 
                 <span className="pb_rounded-4 px-4 rounded" onClick={() => handleForm('login','register')}>Sign up</span>
                  <div className="arrow-up" style={{display: doForm['register']}}></div>
                     <div className="top-container">
@@ -67,7 +67,7 @@ const switcher = () => {
                  </div>
                     </div> 
             </NavItem>
-        <NavItem className="cta-btn ml-xl-2 ml-lg-2 ml-md-0 ml-sm-0 ml-0 pt-2"> 
+        <NavItem className="cta-btn ml-xl-1 ml-lg-1 ml-md-0 ml-sm-0 ml-0 pt-2"> 
                 <span className="pb_rounded-4 px-4 rounded" onClick={() => handleForm('register','login')}>Login</span>
                 <div className="arrow-up" style={{display: doForm['login']}}></div>
                     <div className="top-container">

@@ -6,6 +6,7 @@ import { useMobxStores } from "../../stores/stores";
 
 const schema = {
     email:  {
+      email: true,
       isEmpty: false,
       min: 6,
       message: 'A valid email is required'
@@ -76,9 +77,8 @@ const schema = {
         }
        
     }
-    const hasError = field => {
-        return formState.touched[field] && formState.errors[field].error; 
-    }
+    const hasError = field =>  formState.touched[field] && formState.errors[field].error; 
+    
     const accountLoader = (e, data) => {
         e.preventDefault();
         setScreen(true);
@@ -113,7 +113,7 @@ const schema = {
                     <Input type="email" name="email" onChange={handleChange}
                      value={ formState.values.email || '' } 
                      invalid={ hasError('email') } className="form-control" placeholder="Enter email" />
-                      <FormFeedback  invalid={ hasError('email') }>
+                      <FormFeedback  invalid={ hasError('email') || false }>
             {
                   hasError('email') ? formState.errors.email && formState.errors.email.message : null
                 } 

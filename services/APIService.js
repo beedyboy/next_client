@@ -22,5 +22,6 @@ const  api = Axios.create({
   });
 
   export const serverUrl = urls[process.env.NODE_ENV];
+  export const ENDPOINT = urls[process.env.NODE_ENV];
 
   export default  api;
