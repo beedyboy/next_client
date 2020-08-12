@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
+import shortId from 'short-id';
 import { 
   Container,
   Row,
@@ -18,31 +19,28 @@ import usePlacesAutocomplete, {
 import useOnclickOutside from "react-cool-onclickoutside";
 import ListCard  from '../Product/Card/ListCard';
  const LandingPage = () => { 
-    const { locationStore, productStore } = useMobxStores();
-    const { cities, location } = locationStore; 
-    const homeProducts = productStore.homeProducts;
-    const [display, setDisplay] = useState(false);
-    const [options, setOptions] = useState([]); 
+    const {  productStore } = useMobxStores(); 
+    const homeProducts = productStore.homeProducts;  
     const [search, setSearch] = useState('');
     const [formState, setFormState] = useState({
-        city: '',
+        latitude: '',
+        longitude: '',
         product: ''
     });
+  const { ready, value, suggestions: { status, data},
+  setValue, clearSuggestions
+ } = usePlacesAutocomplete({requestOptions: {
+    // define search engnie scope
+  },
+  debounce: 300
+});
    const ref = useOnclickOutside(() => {
     // When user clicks outside of the component, we can dismiss
     // the searched suggestions by calling this method
     clearSuggestions();
   });
- const { ready, value, suggestions: { status, data}, setValue, clearSuggestions } = usePlacesAutocomplete({requestOptions: {
-    // define search engnie scope
-  },
-  debounce: 300
-});
     let count = homeProducts.length;
-    const wrapper = useRef(null);
-    // useEffect(() => {
-    //     console.log('location', location)
-    // }, []);
+    const wrapper = useRef(null); 
 
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
@@ -57,36 +55,26 @@ import ListCard  from '../Product/Card/ListCard';
             setDisplay(false);
         }
     }
-    const changeLocation = event => {
-        event.persist();
-        const q = event.target.value;
-        setSearch(q);
-        console.log(q.length)
-        q.length > 1 ? filterLocation() : null;
-    }
-    const filterLocation = () => { 
-        let p =  location.filter(( { name }) => name.indexOf(search.toLowerCase()) > 1 )
-             
-        setOptions(p);
-        // console.log( "p", p)
-    }
+    //const changeLocation = event => {
+    //    event.persist();
+    //    const q = event.target.value;
+    //    setSearch(q);
+    //    console.log(q.length)
+    //    q.length > 1 ? filterLocation() : null;
+    //}
+    //const filterLocation = () => { 
+    //    let p =  location.filter(( { name }) => name.indexOf(search.toLowerCase()) > 1 ) 
+    //    setOptions(p); 
+    //}
 
     const handleChange = () => {
 
     }
     const handleSearch = () => {
 
-    }
-    const setCity = data => {
-        setFormState(state => ({
-            ...state,
-            city: data
-        }));
-         setSearch(data);
-        setDisplay(false);
-    }
+    } 
   
-const handleInput = (e) => {
+const changeLocation = (e) => {
 setValue(e.target.value);
 }
 const handleSelect = ({ description }) => () => {
@@ -97,15 +85,18 @@ const handleSelect = ({ description }) => () => {
   .then((results) => getLatLng(results[0]))
   .then(({ lat, lng} ) => {
     console.log("Coordinates: ", {lat, lng });
-  });
-  // AIzaSyA3rf9nGVSK2Zz8lQndk-rGrHhDpE-kp14
+     setFormState(formState => ({
+          ...formState,
+          latitude: lat,
+          longitude: lng
+        }));
+  }); 
 }
 const renderSuggestions = () => 
  data.map((suggestion) => {
-   const { id,structured_formatting: { main_text, secondary_text} } = suggestion;
-
+   const { id,structured_formatting: { main_text, secondary_text} } = suggestion; 
    return (
-     <li key={id} onClick={handleSelect(suggestion)}>
+     <li key={shortId.generate()} onClick={handleSelect(suggestion)}>
        <strong>{main_text}</strong> <small>{secondary_text}</small>
      </li>
    );
@@ -141,78 +132,16 @@ const renderSuggestions = () =>
                         <div  className="field-icon-wrap">
                             <div className="icon"><span className="icon-calendar"></span></div>
                              <div ref={ref}>
-                             <input
+                             <Input
                                value={value}
-                               onChange={handleInput}
+                               onChange={changeLocation}
                                disabled={!ready}
                                placeholder="which area are you looking at"
                                />
                                {status === 'OK' && <ul>{renderSuggestions()}</ul>}
-                             </div>
-                        {/*  <Input
-                             type="text"
-                             onClick={() => setDisplay(!display)} 
-                             onChange={(event) => changeLocation(event)}
-                             placeholder="Type to search"
-                             value={search} id="location"
-                              className="form-control" />
-                              */}
-                            </div>
-                            {display && (
-                                <div className="autoContainer">
-                                    {options
-                                    .slice(0, 5)
-                                    .map((v, i) => {
-                                        return (
-                                            <div
-                                            onClick={() => setCity(v.name)}
-                                             className="option"
-                                              key={i} tabIndex="0"
-                                              >
-                                                <span>{v.name}</span>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )
-                            
-                            }
-                    </Col>
-                   
-{/*                     
-                    <Col md="6" lg="4" className="mb-lg-0">
-                        <Label for="checkin_date" className="font-weight-bold text-black">Location</Label>
-                        <div ref={wrapper} className="field-icon-wrap">
-                            <div className="icon"><span className="icon-calendar"></span></div>
-                            <Input
-                             type="text"
-                             onClick={() => setDisplay(!display)} 
-                             onChange={event => setSearch(event.target.value)}
-                             placeholder="Type to search"
-                             value={search} id="checkin_date"
-                              className="form-control" />
-                            </div>
-                            {display && (
-                                <div className="autoContainer">
-                                    {location
-                                    .filter(( { name }) => name.indexOf(search.toLowerCase()) > 1 )
-                                    .map((v, i) => {
-                                        return (
-                                            <div
-                                            onClick={() => setCity(v.name)}
-                                             className="option"
-                                              key={i} tabIndex="0"
-                                              >
-                                                <span>{v.name}</span>
-                                            </div>
-                                        )
-                                    })}
-                                </div>
-                            )
-                            
-                            }
-                    </Col>
-               */}
+                             </div> 
+                            </div> 
+                    </Col> 
                     <Col md="6" lg="4" className="mb-lg-0">
                         <Label for="checkout_date" className="font-weight-bold text-black">Product</Label>
                         <div className="field-icon-wrap">
@@ -234,8 +163,7 @@ const renderSuggestions = () =>
             </Row>
             </Container>
             </section>
-
-
+ 
             <section className="py-5 bg-light" id="section-about">
             <Container>
             <Row className="align-items-center">

@@ -1,9 +1,13 @@
 import React, { useState, Fragment, useEffect, useRef } from "react";  
 import Head from 'next/head';  
+import shortId from 'short-id';
 import { Row, Container, Col, Form, Card, CardHeader, CardBody, FormGroup, Input, Label, CardFooter, FormText, CustomInput, Button } from "reactstrap";
 import Select from 'react-select';
-//import CKEditor from '@ckeditor/ckeditor5-react';
-//import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng
+} from 'use-places-autocomplete';
+import useOnclickOutside from "react-cool-onclickoutside";
 import dataHero from "data-hero";   
 import { useMobxStores } from "../../stores/stores";
 import styles from './add-product.module.css';   
@@ -20,10 +24,9 @@ const schema = {
       } 
   }; 
 const AddProduct = () => {
-  const { categoryStore, locationStore, productStore } = useMobxStores(); 
+  const { categoryStore, productStore } = useMobxStores(); 
   const { saveProduct, sending, saved, refreshForm } = productStore; 
-  const { categories, tagCategories } = categoryStore; 
-  const { location } = locationStore;  
+  const { categories, tagCategories } = categoryStore;  
   const editorRef= useRef();
   const mainInput = useRef('');
   const firstInput = useRef('');
@@ -47,7 +50,7 @@ const AddProduct = () => {
     const [formState, setFormState] = useState({
         isValid: false, 
         values: {
-          id: '', name: '',  cat_id: '', available: '', location: ''},
+          id: '', name: '',  cat_id: '', available: '', latitude: '', longitude: ''},
         touched: {},
         errors: {}
       });
@@ -117,8 +120,7 @@ const handleChange = event => {
     }
   }
 
-  const getCatName = (id) => {
-    // const d =  categories.find(x => x.id == id) 
+  const getCatName = (id) => { 
    let data = categories.filter(s => s.id == id);  
    setMainCat(data[0].name);
   }
@@ -130,8 +132,7 @@ const handleChange = event => {
 const readURI = (e) => {
     if (e.target.files) { 
         /* Get files in array form */
-        const files = Array.from(e.target.files);
-
+        const files = Array.from(e.target.files); 
         /* Map each file to a promise that resolves to an array of image URI's */ 
         Promise.all(files.map(file => {
             return (new Promise((resolve,reject) => {
@@ -179,16 +180,7 @@ const readURI = (e) => {
     }
    reader.readAsDataURL(image);
   }
-  const handlePackedChange = e => {
-    e.persist();
-    setFormState(formState => ({
-      ...formState,
-      values: {
-        ...formState.values,
-        packed: e.target.id.toUpperCase()
-      } 
-    })); 
-  }
+  
  
   const createProduct = e => {
     e.preventDefault();
@@ -206,6 +198,58 @@ const readURI = (e) => {
 const hasError = field =>
       formState.touched[field] && formState.errors[field].error;  
 
+const changeLocation = (e) => {
+setValue(e.target.value);
+}
+const handleSelect = ({ description }) => () => {
+  setValue(description, false);
+  clearSuggestions();
+  // get latitude and longitude
+  getGeocode({ address: description})
+  .then((results) => getLatLng(results[0]))
+  .then(({ lat, lng} ) => {
+    console.log("Coordinates: ", {lat, lng });
+    setFormState(formState => ({
+          ...formState, 
+      values: {
+        ...formState.values,
+            latitude: lat,
+          longitude: lng
+        }
+        }));
+  }); 
+}
+const renderSuggestions = () => 
+ data.map((suggestion) => {
+   const { id,structured_formatting: { main_text, secondary_text} } = suggestion; 
+   return (
+     <li key={shortId.generate()} onClick={handleSelect(suggestion)}>
+       <strong>{main_text}</strong> <small>{secondary_text}</small>
+     </li>
+   );
+ });
+const handleSelect = ({ description }) => () => {
+  setValue(description, false);
+  clearSuggestions();
+  // get latitude and longitude
+  getGeocode({ address: description})
+  .then((results) => getLatLng(results[0]))
+  .then(({ lat, lng} ) => {
+    console.log("Coordinates: ", {lat, lng });
+  });
+  // AIzaSyA3rf9nGVSK2Zz8lQndk-rGrHhDpE-kp14
+}
+const renderSuggestions = () => 
+ data.map((suggestion) => {
+   const { id,structured_formatting: { main_text, secondary_text} } = suggestion;
+
+   return (
+     <li key={id} onClick={handleSelect(suggestion)}>
+       <strong>{main_text}</strong> <small>{secondary_text}</small>
+     </li>
+   );
+ });
+    
 const handleReset = () => {
          setFormState(formState => ({
       ...formState,
@@ -316,7 +360,16 @@ const handleReset = () => {
               <Col md="12" sm="12">
               <FormGroup>
                     <Label for="location">Location</Label>
-                    <Input
+                    <div ref={ref}>
+                      <Input
+                        value={value}
+                        onChange={changeLocation}
+                        disabled={!ready}
+                        placeholder="Where is your product?"
+                        />
+                        {status === 'OK' && <ul>{renderSuggestions()}</ul>}
+                    </div>
+                  {/*  <Input
                     type="select" 
                     value={formState.values.location || ''}
                     name="location"
@@ -327,6 +380,7 @@ const handleReset = () => {
                         <option value={loc.id} key={loc.id}>{loc.name}</option>
                         ))}
                      </Input>
+                     */}
           </FormGroup> 
               </Col> 
             </Row> 
@@ -339,12 +393,10 @@ const handleReset = () => {
         <Card>
           <CardBody>
           <Row>      
-            <Col md="6" sm="12">
+            <Col md="12" sm="12">
             <div className={styles.beedy}>
                 <div className={styles.imagePreview}>
-                  <img
-                    src={uploadImage.images.main.preview ? uploadImage.images.main.preview :  `/assets/images/dummy.png`} 
-                   alt="Main" />
+                   {buildImgTag()}
                 </div>
                 </div> 
             <input
@@ -366,38 +418,7 @@ const handleReset = () => {
                
               </Button>
             </Label>                
-            </Col> 
-               
-            <Col md="6" sm="12">                 
-            <div className={styles.beedy}>
-                <div className={styles.imagePreview}>
-                  <img
-                  src={uploadImage.images.first.preview ?
-                  uploadImage.images.first.preview :  `/assets/images/dummy.png`}
-                 alt="First" />
-                </div>
-                </div>
-                <input
-                 type="file"
-                 accept="image/*"
-                 name="first"
-                 id="first"
-                onChange={(e)=> handleUpload(e)}
-                className={styles.beedyInput}
-                ref={firstInput}
-            />
-            <Label for="first">
-                 
-              <Button type="button" color="secondary"
-                    size="small" 
-                    aria-label="add"
-                    onClick={(e) => handlePreUpload(e, 'first')}
-                    variant="extended">
-                    <span> Choose First File  <i className="fa fa-camera"></i></span>
-               
-              </Button>
-            </Label>
-            </Col> 
+            </Col>              
          </Row>
           {editorLoaded ? (
                                 <Row>

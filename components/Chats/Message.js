@@ -1,5 +1,5 @@
 import React from 'react'; 
-import './Message.css';
+//import './Message.css';
  import ReactEmoji from 'react-emoji';
 const Message = ({ data: { buyer_id, seller_id, sender, message, id, created_at } }) =>   {
     let isSentByCurrentUser = false; 

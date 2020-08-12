@@ -1,10 +1,7 @@
 import api from "../services/APIService"; 
 const { observable, action, computed } = require("mobx");
 
-class LocationStore {
-    constructor() {
-        this.fetchLocation(); 
-    }
+class LocationStore { 
     @observable locations = [];
     @observable cities = [];
     

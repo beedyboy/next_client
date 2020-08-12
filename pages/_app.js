@@ -39,6 +39,8 @@ export default function MyApp(props) {
       <Head>
         <title>Ecommerce</title>
         <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width" />
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA3rf9nGVSK2Zz8lQndk-rGrHhDpE-kp14&libraries=places"></script>
+    
       </Head>
       {/* <button onClick={() =>Beedy('warning', 'is it working')} >Click </button> */}
       <Responder />

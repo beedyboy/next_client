@@ -59,6 +59,7 @@
     "react-sidebar": "^3.0.2",
     "react-table": "^7.2.1",
     "reactstrap": "^8.5.1",
+    "short-id": "^0.1.0-1",
     "socket.io-client": "^2.3.0",
     "typescript": "^3.9.6",
     "universal-cookie": "^4.0.3",
