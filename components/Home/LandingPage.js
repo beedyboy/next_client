@@ -11,6 +11,11 @@ import {
 import Link from 'next/link'; 
 import { useMobxStores } from '../../stores/stores';
 import { observer } from 'mobx-react';
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng
+} from 'use-places-autocomplete';
+import useOnclickOutside from "react-cool-onclickoutside";
 import ListCard  from '../Product/Card/ListCard';
  const LandingPage = () => { 
     const { locationStore, productStore } = useMobxStores();
@@ -23,6 +28,16 @@ import ListCard  from '../Product/Card/ListCard';
         city: '',
         product: ''
     });
+   const ref = useOnclickOutside(() => {
+    // When user clicks outside of the component, we can dismiss
+    // the searched suggestions by calling this method
+    clearSuggestions();
+  });
+ const { ready, value, suggestions: { status, data}, setValue, clearSuggestions } = usePlacesAutocomplete({requestOptions: {
+    // define search engnie scope
+  },
+  debounce: 300
+});
     let count = homeProducts.length;
     const wrapper = useRef(null);
     // useEffect(() => {
@@ -70,6 +85,31 @@ import ListCard  from '../Product/Card/ListCard';
          setSearch(data);
         setDisplay(false);
     }
+  
+const handleInput = (e) => {
+setValue(e.target.value);
+}
+const handleSelect = ({ description }) => () => {
+  setValue(description, false);
+  clearSuggestions();
+  // get latitude and longitude
+  getGeocode({ address: description})
+  .then((results) => getLatLng(results[0]))
+  .then(({ lat, lng} ) => {
+    console.log("Coordinates: ", {lat, lng });
+  });
+  // AIzaSyA3rf9nGVSK2Zz8lQndk-rGrHhDpE-kp14
+}
+const renderSuggestions = () => 
+ data.map((suggestion) => {
+   const { id,structured_formatting: { main_text, secondary_text} } = suggestion;
+
+   return (
+     <li key={id} onClick={handleSelect(suggestion)}>
+       <strong>{main_text}</strong> <small>{secondary_text}</small>
+     </li>
+   );
+ });
     
     return (
          <Fragment>
@@ -100,13 +140,23 @@ import ListCard  from '../Product/Card/ListCard';
                         <Label for="location" className="font-weight-bold text-black">Location</Label>
                         <div  className="field-icon-wrap">
                             <div className="icon"><span className="icon-calendar"></span></div>
-                            <Input
+                             <div ref={ref}>
+                             <input
+                               value={value}
+                               onChange={handleInput}
+                               disabled={!ready}
+                               placeholder="which area are you looking at"
+                               />
+                               {status === 'OK' && <ul>{renderSuggestions()}</ul>}
+                             </div>
+                        {/*  <Input
                              type="text"
                              onClick={() => setDisplay(!display)} 
                              onChange={(event) => changeLocation(event)}
                              placeholder="Type to search"
                              value={search} id="location"
                               className="form-control" />
+                              */}
                             </div>
                             {display && (
                                 <div className="autoContainer">

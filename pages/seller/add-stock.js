@@ -17,7 +17,12 @@ const schema = {
       cat_id:  {
         min: 1,
         message: 'Category is required'
-      } 
+      },
+    available: {
+      isEmpty: false,
+      max: 50,
+      message: 'Quantity is required'
+    }
   }; 
 const AddProduct = () => {
   const { categoryStore, locationStore, productStore } = useMobxStores(); 
@@ -34,7 +39,6 @@ const AddProduct = () => {
   const [description, setDescription] = useState('');
   const [mainCat, setMainCat] = useState(null);
   const [tags, setTags] = useState('');
-  const [imageArray, setImageArray] = useState([]);
   const [uploadImage, setUploadImage] = useState({
     images: {
       'main': {preview: '', file: 'choose file'},
@@ -47,7 +51,10 @@ const AddProduct = () => {
     const [formState, setFormState] = useState({
         isValid: false, 
         values: {
-          id: '', name: '',  cat_id: '', available: '', location: ''},
+          id: '',
+          name: '',  cat_id: '', available: '', location: '',  price: '',
+          packed: '', first_delivery: false, second_delivery: false, third_delivery: false, within_distance: '', within_charge:'', beyond_distance: '', beyond_charge:''
+        },
         touched: {},
         errors: {}
       });
@@ -127,40 +134,7 @@ const handleChange = event => {
     const data = editor.getData(); 
       setDescription(data); 
   }
-const readURI = (e) => {
-    if (e.target.files) { 
-        /* Get files in array form */
-        const files = Array.from(e.target.files);
 
-        /* Map each file to a promise that resolves to an array of image URI's */ 
-        Promise.all(files.map(file => {
-            return (new Promise((resolve,reject) => {
-                const reader = new FileReader();
-                reader.addEventListener('load', (ev) => {
-                    resolve(ev.target.result);
-                });
-                reader.addEventListener('error', reject);
-                reader.readAsDataURL(file);
-            }));
-        }))
-        .then(images => { 
-            /* Once all promises are resolved, update state with image URI array */
-            setImageArray( images )
-
-        }, error => {        
-            console.error(error);
-        });
-    }
-}
-  const buildImgTag = () => {
-
-    return <div className="photo-container">
-    { 
-     imageArray.map(imageURI => 
-      (<img className="photo-uploaded" src={imageURI} alt="Photo uploaded"/>)) 
-    }
-    </div>
-}
   const handleUpload = e => {
     e.persist(); 
     let reader = new FileReader();
@@ -199,8 +173,18 @@ const readURI = (e) => {
     fd.append('tags', JSON.stringify(tags));
     fd.append('mainCat', mainCat); 
     fd.append('name', formState.values.name);
-    fd.append('cat_id', formState.values.cat_id); 
-    fd.append('location', formState.values.location); 
+    fd.append('cat_id', formState.values.cat_id);
+    fd.append('available', formState.values.available);
+    fd.append('location', formState.values.location);
+    fd.append('price', formState.values.price); 
+    fd.append('packed', formState.values.packed); 
+    fd.append('first_delivery', formState.values.first_delivery); 
+    fd.append('second_delivery', formState.values.second_delivery); 
+    fd.append('third_delivery', formState.values.third_delivery); 
+    fd.append('within_distance', formState.values.within_distance); 
+    fd.append('within_charge', formState.values.within_charge); 
+    fd.append('beyond_distance', formState.values.beyond_distance); 
+    fd.append('beyond_charge', formState.values.beyond_charge);  
     saveProduct(fd); 
   }
 const hasError = field =>
@@ -265,7 +249,30 @@ const handleReset = () => {
               </FormGroup>
               </Col>
               </Row>
-               
+              <Row> 
+                <Col md="6">
+                        <FormGroup className={
+                             hasError('available') ? 'has-danger' : null} >
+                          <label htmlFor="available">
+                            Quantity
+                          </label>
+                          <Input onChange={handleChange}  name="available" value={formState.values.available} type="number" />
+                          <FormText>
+                           <p className="text-danger">{  hasError('available') ? formState.errors.available && formState.errors.available.message : null } </p>
+                        </FormText>
+                        </FormGroup>
+                      </Col> 
+
+                      <Col md="6">
+                        <FormGroup>
+                          <label htmlFor="price">
+                            Price
+                          </label>
+                          <Input onChange={handleChange}  name="price" value={formState.values.price} type="number" />
+                        </FormGroup>
+                      </Col> 
+                   
+                </Row>
 
             <Row>
               <Col md="12">
@@ -329,7 +336,54 @@ const handleReset = () => {
                      </Input>
           </FormGroup> 
               </Col> 
-            </Row> 
+            </Row>
+              {/* Delivery */}
+            <Row>
+              <Col md="12">
+                <FormGroup>
+                  <CustomInput type="checkbox" checked={formState.values.first_delivery} onChange={handleChange} value={formState.values.first_delivery} id="first_delivery" name="first_delivery" label="Buyer pick up" />
+                </FormGroup>
+              </Col>
+            </Row>
+            <Row>
+              <Col md="4">
+                <FormGroup>
+                  <CustomInput type="checkbox" checked={formState.values.second_delivery}  onChange={handleChange} value={formState.values.second_delivery} id="second_delivery" name="second_delivery" label="Seller delivers within XX Meters" />
+                </FormGroup>
+              </Col>
+              <Col md="4">
+                <FormGroup>
+                  <Label>Meters</Label>
+                  <Input type="text" name="within_distance" value={formState.values.within_distance} onChange={handleChange} />
+                </FormGroup>
+              </Col>
+              <Col md="4">
+                <FormGroup>
+                  <Label>Charges</Label>
+                  <Input type="text" name="within_charge" value={formState.values.within_charge} onChange={handleChange} />
+                </FormGroup>
+              </Col>
+            </Row>
+          
+            <Row>
+              <Col md="4">
+                <FormGroup>
+                  <CustomInput type="checkbox" checked={formState.values.third_delivery}  onChange={handleChange} value={formState.values.third_delivery} id="third_delivery" name="third_delivery" label="Seller delivers beyond XX Meters" />
+                </FormGroup>
+              </Col>
+              <Col md="4">
+                <FormGroup>
+                  <Label>Meters</Label>
+                  <Input type="text" name="beyond_distance" value={formState.values.beyond_distance} onChange={handleChange} />
+                </FormGroup>
+              </Col>
+              <Col md="4">
+                <FormGroup>
+                  <Label>Charges</Label>
+                  <Input type="text" name="beyond_charge" value={formState.values.beyond_charge} onChange={handleChange} />
+                </FormGroup>
+              </Col>
+            </Row>
           </CardBody>
         </Card>
       </Col>

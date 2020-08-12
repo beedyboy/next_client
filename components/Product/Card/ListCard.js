@@ -23,9 +23,9 @@ const ListCard = props => {
                    <div className="flip-card">
                    <div className="flip-content">
                 <div className="flip-front">
-                <CardImg top width="100%" style={{height: '200px'}}
+               {/* <CardImg top width="100%" style={{height: '200px'}}
                 src={`${serverUrl}${product.main_image}`}
-                alt={product.product_name} />
+                alt={product.product_name} /> */}
                     {/* <CardTitle>{product.product_name}</CardTitle>  */}
                     <p className={styles.price}>{product.price}</p>
                     <div className={styles.rating}><NoactionStar total="4" /></div>

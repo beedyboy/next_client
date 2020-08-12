@@ -16,7 +16,8 @@ const BuyerCard = props => {
                 <Row>
                     <Col key={product.id} sm="12" md="3">
                         <Card>
-                        <CardImg top width="100%" src={`${serverUrl}${product.main_image}`}  alt={product.product_name} />
+                      {/*  <CardImg top width="100%" src={`${serverUrl}${product.main_image}`}
+                        alt={product.product_name} /> */}
                         <CardBody className={styles.card-body}>
                             <CardTitle className={styles.card-title}>{product.product_name}</CardTitle>
                             <CardText>{product.description}</CardText>
