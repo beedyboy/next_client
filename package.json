@@ -23,7 +23,7 @@
     "aos": "^3.0.0-beta.6",
     "axios": "^0.19.2",
     "bootstrap": "^4.5.0",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "cross-env": "^7.0.2",
     "data-hero": "^1.2.9",
     "event-emitter": "^0.3.5",
